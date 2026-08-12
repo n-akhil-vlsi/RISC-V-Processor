@@ -30,7 +30,7 @@ module immediate_generator(
             7'b0010111:
                 immediate = {instruction[31:12],12'b0};
 
-            // J-Type (JAL)
+            // J-Type (JAL)        
             7'b1101111:
                 immediate = {{11{instruction[31]}},instruction[31],instruction[19:12],instruction[20],instruction[30:21],1'b0};
 

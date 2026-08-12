@@ -14,8 +14,8 @@ module control_unit(
 );
 
 always @(*) begin
-
-    // Default values
+    
+    //initial values
     RegWrite = 0;
     MemRead  = 0;
     MemWrite = 0;

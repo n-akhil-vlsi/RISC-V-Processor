@@ -1,7 +1,7 @@
 module register_file (
 
     input wire clk,
-    input wire we,
+    input wire we,  //it is the control signal(Regwrite)
 
     input wire [4:0] rs1,
     input wire [4:0] rs2,
@@ -25,11 +25,12 @@ module register_file (
             registers[i] = 32'b0;
     end
 
-    // Asynchronous Read
+    //Read is Asynchronous because we are not changing or modifying anything in any module,we are just reading the values anytime.
     assign read_data1 = (rs1 == 5'd0) ? 32'b0 : registers[rs1];
     assign read_data2 = (rs2 == 5'd0) ? 32'b0 : registers[rs2];
 
-    // Synchronous Write
+
+    //We synchronize the write so that the state of the processor changes only at controlled clock edges to maintain the synchronization.
     always @(posedge clk) begin
     if (we && (rd != 5'd0)) begin
         registers[rd] <= write_data;
