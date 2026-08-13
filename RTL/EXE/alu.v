@@ -2,7 +2,7 @@ module alu(
 
     input  wire [31:0] A,
     input  wire [31:0] B,
-    input  wire [3:0]  ALUControl,
+    input  wire [3:0]  ALUControl,              //from the alu_control
 
     output reg [31:0] Result,
     output wire Zero

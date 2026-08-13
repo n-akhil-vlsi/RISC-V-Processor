@@ -1,6 +1,6 @@
 module alu_control(
 
-    input  wire [1:0] ALUOp,
+    input  wire [1:0] ALUOp,                        //from the control unit
     input  wire [2:0] funct3,
     input  wire [6:0] funct7,
 
