@@ -20,25 +20,31 @@ module register_file (
     integer i;
 
     // Initialize all registers to zero
-    initial begin
+    initial 
+    begin
         for(i = 0; i < 32; i = i + 1)
             registers[i] = 32'b0;
     end
 
     //Read is Asynchronous because we are not changing or modifying anything in any module,we are just reading the values anytime.
+    
     assign read_data1 = (rs1 == 5'd0) ? 32'b0 : registers[rs1];
     assign read_data2 = (rs2 == 5'd0) ? 32'b0 : registers[rs2];
 
 
     //We synchronize the write so that the state of the processor changes only at controlled clock edges to maintain the synchronization.
-    always @(posedge clk) begin
-    if (we && (rd != 5'd0)) begin
+    
+    always @(posedge clk) 
+    begin
+      if (we && (rd != 5'd0)) 
+        begin
         registers[rd] <= write_data;
         $display("Time=%0t : Writing x%0d = %0d", $time, rd, write_data);
         end
     end
 
-    always @(posedge clk) begin
+    always @(posedge clk) 
+    begin
         $display("x1=%0d x2=%0d x3=%0d",registers[1],registers[2],registers[3]);
     end
 endmodule
