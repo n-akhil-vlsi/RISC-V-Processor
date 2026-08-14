@@ -3,6 +3,7 @@ module if_id_register(
     input wire clk,
     input wire reset,
     input wire write_enable,
+    input wire flush,             // NEW
 
     input wire [31:0] pc_in,
     input wire [31:0] pc_next_in,
@@ -21,6 +22,14 @@ always @(posedge clk or posedge reset) begin
         pc_out <= 32'd0;
         pc_next_out <= 32'd0;
         instruction_out <= 32'd0;
+
+    end
+
+    else if(flush) begin                    // NEW: flush takes priority over write_enable
+
+        pc_out <= 32'd0;
+        pc_next_out <= 32'd0;
+        instruction_out <= 32'd0;            // NOP bubble
 
     end
 

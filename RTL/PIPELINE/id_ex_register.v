@@ -2,14 +2,17 @@ module id_ex_register(
 
     input wire clk,
     input wire reset,
+    input wire flush,                // NEW
 
     input wire RegWrite_in,
     input wire MemRead_in,
     input wire MemWrite_in,
-    input wire MemtoReg_in,
+    input wire [1:0] ResultSrc_in,
     input wire ALUSrc_in,
+    input wire [1:0] ALUSrcA_in,
     input wire Branch_in,
     input wire Jump_in,
+    input wire JALR_in,
     input wire [1:0] ALUOp_in,
 
     input wire [31:0] pc_in,
@@ -28,10 +31,12 @@ module id_ex_register(
     output reg RegWrite_out,
     output reg MemRead_out,
     output reg MemWrite_out,
-    output reg MemtoReg_out,
+    output reg [1:0] ResultSrc_out,
     output reg ALUSrc_out,
+    output reg [1:0] ALUSrcA_out,
     output reg Branch_out,
     output reg Jump_out,
+    output reg JALR_out,
     output reg [1:0] ALUOp_out,
 
     output reg [31:0] pc_out,
@@ -56,10 +61,12 @@ always @(posedge clk or posedge reset) begin
         RegWrite_out <= 0;
         MemRead_out <= 0;
         MemWrite_out <= 0;
-        MemtoReg_out <= 0;
+        ResultSrc_out <= 2'b00;
         ALUSrc_out <= 0;
+        ALUSrcA_out <= 2'b00;
         Branch_out <= 0;
         Jump_out <= 0;
+        JALR_out <= 0;
         ALUOp_out <= 2'b00;
 
         pc_out <= 32'd0;
@@ -79,15 +86,47 @@ always @(posedge clk or posedge reset) begin
 
     end
 
+    else if(flush) begin                 // NEW: bubble — zero control signals only
+
+        RegWrite_out <= 0;
+        MemRead_out <= 0;
+        MemWrite_out <= 0;
+        ResultSrc_out <= 2'b00;
+        ALUSrc_out <= 0;
+        ALUSrcA_out <= 2'b00;
+        Branch_out <= 0;
+        Jump_out <= 0;
+        JALR_out <= 0;
+        ALUOp_out <= 2'b00;
+
+        pc_out <= pc_in;
+        pc_next_out <= pc_next_in;
+
+        read_data1_out <= read_data1_in;
+        read_data2_out <= read_data2_in;
+
+        immediate_out <= immediate_in;
+
+        rs1_out <= rs1_in;
+        rs2_out <= rs2_in;
+        rd_out <= rd_in;
+
+        funct3_out <= funct3_in;
+        funct7_out <= funct7_in;
+
+    end
+
     else begin
 
         RegWrite_out <= RegWrite_in;
         MemRead_out <= MemRead_in;
         MemWrite_out <= MemWrite_in;
-        MemtoReg_out <= MemtoReg_in;
+        ResultSrc_out <= ResultSrc_in;
         ALUSrc_out <= ALUSrc_in;
+        ALUSrcA_out <= ALUSrcA_in;
         Branch_out <= Branch_in;
         Jump_out <= Jump_in;
+        JALR_out <= JALR_in;
         ALUOp_out <= ALUOp_in;
 
         pc_out <= pc_in;

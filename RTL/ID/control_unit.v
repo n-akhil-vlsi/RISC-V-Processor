@@ -6,9 +6,11 @@ module control_unit(
     output reg MemRead,
     output reg MemWrite,
     output reg ALUSrc,
-    output reg MemtoReg,
+    output reg [1:0] ALUSrcA,    // 00=rs1, 01=PC, 10=zero
+    output reg [1:0] ResultSrc,  // MODIFIED: was MemtoReg (1-bit). 00=ALU, 01=Mem, 10=PC+4
     output reg Branch,
     output reg Jump,
+    output reg JALR,             // NEW: distinguishes JALR from JAL for branch_unit target calc
     output reg [1:0] ALUOp
 
 );
@@ -16,14 +18,16 @@ module control_unit(
 always @(*) begin
     
     //initial values
-    RegWrite = 0;
-    MemRead  = 0;
-    MemWrite = 0;
-    ALUSrc   = 0;
-    MemtoReg = 0;
-    Branch   = 0;
-    Jump     = 0;
-    ALUOp    = 2'b00;
+    RegWrite  = 0;
+    MemRead   = 0;
+    MemWrite  = 0;
+    ALUSrc    = 0;
+    ALUSrcA   = 2'b00;
+    ResultSrc = 2'b00;   // MODIFIED: default = ALU result
+    Branch    = 0;
+    Jump      = 0;
+    JALR      = 0;       // NEW
+    ALUOp     = 2'b00;
 
     case(opcode)
 
@@ -43,11 +47,11 @@ always @(*) begin
 
         // Load Word (LW)
         7'b0000011: begin
-            RegWrite = 1;
-            MemRead  = 1;
-            MemtoReg = 1;
-            ALUSrc   = 1;
-            ALUOp    = 2'b00;
+            RegWrite  = 1;
+            MemRead   = 1;
+            ResultSrc = 2'b01;   // MODIFIED: was MemtoReg = 1
+            ALUSrc    = 1;
+            ALUOp     = 2'b00;
         end
 
         // Store Word (SW)
@@ -65,27 +69,32 @@ always @(*) begin
 
         // JAL
         7'b1101111: begin
-            Jump     = 1;
-            RegWrite = 1;
+            Jump      = 1;
+            RegWrite  = 1;
+            ResultSrc = 2'b10;   // NEW: write PC+4 to rd
         end
 
         // JALR
         7'b1100111: begin
-            Jump     = 1;
-            RegWrite = 1;
-            ALUSrc   = 1;
+            Jump      = 1;
+            JALR      = 1;       // NEW: target = rs1+imm, not pc+imm
+            RegWrite  = 1;
+            ALUSrc    = 1;
+            ResultSrc = 2'b10;   // NEW: write PC+4 to rd
         end
 
         // LUI
         7'b0110111: begin
             RegWrite = 1;
             ALUSrc   = 1;
+            ALUSrcA  = 2'b10;
         end
 
         // AUIPC
         7'b0010111: begin
             RegWrite = 1;
             ALUSrc   = 1;
+            ALUSrcA  = 2'b01;
         end
 
         default: begin

@@ -49,6 +49,10 @@ always @(*) begin
         4'b1000:
             Result = ($signed(A) < $signed(B)) ? 32'd1 : 32'd0;
 
+        // Set Less Than Unsigned
+        4'b1001:
+            Result = (A < B) ? 32'd1 : 32'd0;
+
         default:
             Result = 32'd0;
 

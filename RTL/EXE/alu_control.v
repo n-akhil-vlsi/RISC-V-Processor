@@ -18,7 +18,20 @@ always @(*) begin
 
         // Branch
         2'b01:
-            ALUControl = 4'b0001;   // SUB
+        begin
+            case(funct3)
+
+                3'b000: ALUControl = 4'b0001;   // BEQ  -> SUB (branch_unit checks Zero)
+                3'b001: ALUControl = 4'b0001;   // BNE  -> SUB (branch_unit checks !Zero)
+                3'b100: ALUControl = 4'b1000;   // BLT  -> SLT
+                3'b101: ALUControl = 4'b1000;   // BGE  -> SLT (branch_unit inverts result)
+                3'b110: ALUControl = 4'b1001;   // BLTU -> SLTU
+                3'b111: ALUControl = 4'b1001;   // BGEU -> SLTU (branch_unit inverts result)
+
+                default: ALUControl = 4'b0001;  // fallback: SUB
+
+            endcase
+        end
 
         // R-Type
         2'b10:
@@ -28,8 +41,10 @@ always @(*) begin
                 3'b000:
                     if(funct7 == 7'b0100000)
                         ALUControl = 4'b0001;   // SUB
-                    else
+                    else if(funct7 == 7'b0000000)
                         ALUControl = 4'b0000;   // ADD
+                    else
+                        ALUControl = 4'b0000;   // fallback
 
                 3'b111:
                     ALUControl = 4'b0010;       // AND
@@ -46,11 +61,16 @@ always @(*) begin
                 3'b101:
                     if(funct7 == 7'b0100000)
                         ALUControl = 4'b0111;   // SRA
-                    else
+                    else if(funct7 == 7'b0000000)
                         ALUControl = 4'b0110;   // SRL
+                    else
+                        ALUControl = 4'b0110;   // fallback
 
                 3'b010:
                     ALUControl = 4'b1000;       // SLT
+
+                3'b011:
+                    ALUControl = 4'b1001;       // SLTU
 
                 default:
                     ALUControl = 4'b0000;
@@ -68,6 +88,14 @@ always @(*) begin
                 3'b110: ALUControl = 4'b0011;   // ORI
                 3'b100: ALUControl = 4'b0100;   // XORI
                 3'b010: ALUControl = 4'b1000;   // SLTI
+                3'b011: ALUControl = 4'b1001;   // SLTIU
+                3'b001: ALUControl = 4'b0101;   // SLLI
+
+                3'b101:
+                    if(funct7 == 7'b0100000)
+                        ALUControl = 4'b0111;   // SRAI
+                    else
+                        ALUControl = 4'b0110;   // SRLI
 
                 default: ALUControl = 4'b0000;
 
