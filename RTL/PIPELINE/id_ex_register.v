@@ -2,7 +2,7 @@ module id_ex_register(
 
     input wire clk,
     input wire reset,
-    input wire flush,                // NEW
+    input wire flush,               
 
     input wire RegWrite_in,
     input wire MemRead_in,
@@ -86,7 +86,7 @@ always @(posedge clk or posedge reset) begin
 
     end
 
-    else if(flush) begin                 // NEW: bubble — zero control signals only
+    else if(flush) begin                 //bubble — zero control signals only
 
         RegWrite_out <= 0;
         MemRead_out <= 0;

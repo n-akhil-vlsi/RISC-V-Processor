@@ -1,6 +1,7 @@
 module riscv_processor(
     input wire clk,
     input wire reset);
+
 // IF Stage
 wire [31:0] pc;
 wire [31:0] next_pc;
@@ -42,7 +43,7 @@ wire IF_ID_Write;
 wire ControlMux;
  
 // Flush (pipeline control)
-wire flush;   // NEW
+wire flush;  
  
 // ID/EX Pipeline Register
 wire [31:0] id_ex_pc;
@@ -106,7 +107,7 @@ wire [31:0] ex_mem_pc_next;
  
 wire ex_mem_zero;
  
-wire [2:0] ex_mem_funct3;   // NEW: for byte/halfword load-store in data_memory
+wire [2:0] ex_mem_funct3;   //for byte/halfword load-store in data_memory
  
 wire [4:0] ex_mem_rd;
  
@@ -136,7 +137,7 @@ wire [1:0] mem_wb_ResultSrc;
  
 wire [31:0] write_back_data;
  
-// NEW: flush asserted whenever PC is redirected (taken branch / JAL / JALR)
+//flush asserted whenever PC is redirected (taken branch / JAL / JALR)
 assign flush = PCSrc;
  
 pc pc_inst(
@@ -144,17 +145,19 @@ pc pc_inst(
     .clk(clk),
     .reset(reset),
  
-    .PCWrite(PCWrite),
+    .PCWrite(PCWrite),                     ////PCWrite is the control signal form the hazard detection unit.which is 1 when no hazard is detected.
  
     .pc_next(next_pc),
     .pc(pc)
  
 );
+
 wire [31:0] pc_plus4;
  
 assign pc_plus4 = pc + 32'd4;
-assign next_pc = (PCSrc) ? branch_target : pc_plus4;
+assign next_pc = (PCSrc) ? branch_target : pc_plus4;                //PCSrc control signal form the branch_unit.
  
+
 instruction_memory instruction_memory_inst(
  
     .address(pc),
@@ -162,13 +165,14 @@ instruction_memory instruction_memory_inst(
  
 );
  
+
 if_id_register if_id_register_inst(
  
     .clk(clk),
     .reset(reset),
  
-    .write_enable(IF_ID_Write),
-    .flush(flush),                 // NEW
+    .write_enable(IF_ID_Write),             //IF_ID_Write is the control signal form the hazard detection unit.which is 1 when no hazard is detected.
+    .flush(flush),          
  
     .pc_in(pc),
     .pc_next_in(pc_plus4),
@@ -260,7 +264,7 @@ id_ex_register id_ex_register_inst(
  
     .clk(clk),
     .reset(reset),
-    .flush(flush),                                   // NEW
+    .flush(flush),                                  
  
     .RegWrite_in(ControlMux ? 1'b0 : RegWrite),
     .MemRead_in(ControlMux ? 1'b0 : MemRead),
@@ -316,8 +320,11 @@ id_ex_register id_ex_register_inst(
  
 );
  
-// Forwarding Unit
+// Forwarding Unit is in the execute stage.
  
+ //It looks ahead into MEM and WB pipeline registers to detect hazards, but its effect — selecting ALU operand sources via ForwardA/ForwardB — happens entirely within Execute
+
+
 forwarding_unit forwarding_unit_inst(
  
     .EX_MEM_RegWrite(ex_mem_RegWrite),
@@ -348,25 +355,18 @@ alu_control alu_control_inst(
 assign forwardA_data =
         (ForwardA == 2'b00) ? id_ex_read_data1 :
         (ForwardA == 2'b10) ? ex_mem_alu_result :
-        (ForwardA == 2'b01) ? write_back_data :
-                              id_ex_read_data1;
+        (ForwardA == 2'b01) ? write_back_data :id_ex_read_data1;
  
 // ALUSrcA overrides forwardA_data for LUI (zero) / AUIPC (PC)
-assign alu_input1 =
-        (id_ex_ALUSrcA == 2'b01) ? id_ex_pc :
-        (id_ex_ALUSrcA == 2'b10) ? 32'b0     :
-                                    forwardA_data;
+
+assign alu_input1 =(id_ex_ALUSrcA == 2'b01) ? id_ex_pc :(id_ex_ALUSrcA == 2'b10) ? 32'b0 :forwardA_data;
  
 assign forwardB_data =
         (ForwardB == 2'b00) ? id_ex_read_data2 :
         (ForwardB == 2'b10) ? ex_mem_alu_result :
-        (ForwardB == 2'b01) ? write_back_data :
-                              id_ex_read_data2;
+        (ForwardB == 2'b01) ? write_back_data :id_ex_read_data2;
  
-assign alu_input2 =
-        (id_ex_ALUSrc) ?
-        id_ex_immediate :
-        forwardB_data;
+assign alu_input2 =(id_ex_ALUSrc) ?id_ex_immediate :forwardB_data;
                     
 //ALU
  
@@ -382,7 +382,7 @@ alu alu_inst(
  
 );
  
-// Branch Unit
+// Branch Unit(it is in the EXECUTE state)
  
 branch_unit branch_unit_inst(
  
@@ -391,7 +391,7 @@ branch_unit branch_unit_inst(
     .JALR(id_ex_JALR),
  
     .Zero(Zero),
-    .funct3(id_ex_funct3),        // NEW: needed to decode branch condition (BEQ/BNE/BLT/BGE/BLTU/BGEU)
+    .funct3(id_ex_funct3),       
  
     .pc(id_ex_pc),
     .rs1(alu_input1),
@@ -405,48 +405,47 @@ branch_unit branch_unit_inst(
 // EX/MEM Pipeline Register
  
 ex_mem_register ex_mem_register_inst(
- 
+
     .clk(clk),
     .reset(reset),
- 
+
     .RegWrite_in(id_ex_RegWrite),
     .MemRead_in(id_ex_MemRead),
     .MemWrite_in(id_ex_MemWrite),
     .ResultSrc_in(id_ex_ResultSrc),
     .Branch_in(id_ex_Branch),
     .Jump_in(id_ex_Jump),
- 
+
     .Zero_in(Zero),
- 
-    .funct3_in(id_ex_funct3),          // NEW
- 
+
+    .funct3_in(id_ex_funct3),        
+
     .branch_target_in(branch_target),
     .alu_result_in(alu_result),
     .write_data_in(forwardB_data),
     .pc_next_in(id_ex_pc_next),
- 
+
     .rd_in(id_ex_rd),
- 
+
     .RegWrite_out(ex_mem_RegWrite),
     .MemRead_out(ex_mem_MemRead),
     .MemWrite_out(ex_mem_MemWrite),
     .ResultSrc_out(ex_mem_ResultSrc),
     .Branch_out(ex_mem_Branch),
     .Jump_out(ex_mem_Jump),
- 
+
     .Zero_out(ex_mem_zero),
- 
-    .funct3_out(ex_mem_funct3),        // NEW
- 
+
+    .funct3_out(ex_mem_funct3),        
+
     .branch_target_out(ex_mem_branch_target),
     .alu_result_out(ex_mem_alu_result),
     .write_data_out(ex_mem_write_data),
     .pc_next_out(ex_mem_pc_next),
- 
+
     .rd_out(ex_mem_rd)
- 
+
 );
- 
 // Data Memory
  
 data_memory data_memory_inst(
@@ -456,7 +455,7 @@ data_memory data_memory_inst(
     .MemRead(ex_mem_MemRead),
     .MemWrite(ex_mem_MemWrite),
  
-    .funct3(ex_mem_funct3),            // NEW: selects byte/halfword/word access
+    .funct3(ex_mem_funct3),            //selects byte/halfword/word access
  
     .address(ex_mem_alu_result),
  
@@ -497,8 +496,7 @@ mem_wb_register mem_wb_register_inst(
  
 assign write_back_data =
         (mem_wb_ResultSrc == 2'b01) ? mem_wb_read_data :
-        (mem_wb_ResultSrc == 2'b10) ? mem_wb_pc_next   :
-                                       mem_wb_alu_result;
+        (mem_wb_ResultSrc == 2'b10) ? mem_wb_pc_next   : mem_wb_alu_result;
  
 endmodule
  

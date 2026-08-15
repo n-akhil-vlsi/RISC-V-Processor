@@ -1,10 +1,10 @@
-module branch_unit(
+module branch_unit(               //this module is used for the branch or jump instruction(PC).
 
     input wire Branch,
     input wire Jump,
     input wire JALR,
-    input wire Zero,          // from ALU: (ALU_result == 0)
-    input wire [2:0] funct3,  // NEW: needed to decode branch condition
+    input wire Zero,          
+    input wire [2:0] funct3,  //needed to decode branch condition
 
     input wire [31:0] pc,
     input wire [31:0] rs1,
@@ -15,18 +15,9 @@ module branch_unit(
 
 );
 
-    // Branch Target Address
-    // JALR: (rs1 + imm) with LSB cleared | JAL/Branch: pc + imm
-    assign branch_target = (JALR) ?
-                            ((rs1 + immediate) & 32'hFFFFFFFE) :
-                            (pc + immediate);
+    //we make the lsb 0 to ensure the JALR target address is properly aligned, as required by the RISC-V specification.
+    assign branch_target = (JALR) ? ((rs1 + immediate) & 32'hFFFFFFFE) :(pc + immediate);
 
-    // Decode branch condition from funct3
-    // ALUControl for branches (from alu_control):
-    //   BEQ/BNE  -> SUB   : Zero=1 means rs1==rs2
-    //   BLT/BLTU -> SLT/SLTU : ALU result = (rs1<rs2) ? 1 : 0
-    //                          Zero=1 means result==0, i.e. rs1>=rs2
-    //   BGE/BGEU -> same SLT/SLTU, branch_unit inverts by using Zero directly
     reg branch_taken;
 
     always @(*) begin
@@ -41,7 +32,7 @@ module branch_unit(
         endcase
     end
 
-    // Select Next PC
+    //mux for next PC
     assign PCSrc = (Branch & branch_taken) | Jump;
 
 endmodule

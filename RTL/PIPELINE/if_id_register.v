@@ -17,28 +17,26 @@ module if_id_register(
 
 always @(posedge clk or posedge reset) begin
 
-    if(reset) begin
-
+    if(reset) 
+    begin
         pc_out <= 32'd0;
         pc_next_out <= 32'd0;
         instruction_out <= 32'd0;
-
     end
 
-    else if(flush) begin                    // NEW: flush takes priority over write_enable
-
+    else if(flush) 
+    begin                                     //flush takes priority over write_enable
         pc_out <= 32'd0;
         pc_next_out <= 32'd0;
         instruction_out <= 32'd0;            // NOP bubble
-
     end
 
-    else if(write_enable) begin
 
+    else if(write_enable) 
+    begin
         pc_out <= pc_in;
         pc_next_out <= pc_next_in;
         instruction_out <= instruction_in;
-
     end
 
 end

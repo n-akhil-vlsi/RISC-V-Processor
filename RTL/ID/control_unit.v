@@ -5,28 +5,28 @@ module control_unit(
     output reg RegWrite,
     output reg MemRead,
     output reg MemWrite,
-    output reg ALUSrc,
-    output reg [1:0] ALUSrcA,    // 00=rs1, 01=PC, 10=zero
-    output reg [1:0] ResultSrc,  // MODIFIED: was MemtoReg (1-bit). 00=ALU, 01=Mem, 10=PC+4
+    output reg ALUSrc,               //mux,before the input B of the ALU.
+    output reg [1:0] ALUSrcA,        //mux,before the input A of the ALU. 00=rs1, 01=PC(AUIPC), 10=zero(LUI).
+    output reg [1:0] ResultSrc,      // modified MemtoReg (1-bit) mux. 00=ALU, 01=Mem(LW), 10=PC+4(JAL,JALR).
     output reg Branch,
     output reg Jump,
-    output reg JALR,             // NEW: distinguishes JALR from JAL for branch_unit target calc
+    output reg JALR,             
     output reg [1:0] ALUOp
 
 );
 
 always @(*) begin
     
-    //initial values
+    
     RegWrite  = 0;
     MemRead   = 0;
     MemWrite  = 0;
     ALUSrc    = 0;
     ALUSrcA   = 2'b00;
-    ResultSrc = 2'b00;   // MODIFIED: default = ALU result
+    ResultSrc = 2'b00;  
     Branch    = 0;
     Jump      = 0;
-    JALR      = 0;       // NEW
+    JALR      = 0;     
     ALUOp     = 2'b00;
 
     case(opcode)
@@ -49,7 +49,7 @@ always @(*) begin
         7'b0000011: begin
             RegWrite  = 1;
             MemRead   = 1;
-            ResultSrc = 2'b01;   // MODIFIED: was MemtoReg = 1
+            ResultSrc = 2'b01;   
             ALUSrc    = 1;
             ALUOp     = 2'b00;
         end
@@ -61,7 +61,7 @@ always @(*) begin
             ALUOp    = 2'b00;
         end
 
-        // Branch (BEQ/BNE)
+        // Branch (BEQ/BNE/BLT,BGE,BGEU,BLTU)
         7'b1100011: begin
             Branch = 1;
             ALUOp  = 2'b01;
@@ -71,16 +71,16 @@ always @(*) begin
         7'b1101111: begin
             Jump      = 1;
             RegWrite  = 1;
-            ResultSrc = 2'b10;   // NEW: write PC+4 to rd
+            ResultSrc = 2'b10;   
         end
 
         // JALR
         7'b1100111: begin
             Jump      = 1;
-            JALR      = 1;       // NEW: target = rs1+imm, not pc+imm
+            JALR      = 1;      
             RegWrite  = 1;
             ALUSrc    = 1;
-            ResultSrc = 2'b10;   // NEW: write PC+4 to rd
+            ResultSrc = 2'b10;   
         end
 
         // LUI

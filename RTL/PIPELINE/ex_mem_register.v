@@ -6,13 +6,13 @@ module ex_mem_register(
     input wire RegWrite_in,
     input wire MemRead_in,
     input wire MemWrite_in,
-    input wire [1:0] ResultSrc_in,   // MODIFIED: was MemtoReg_in (1-bit)
+    input wire [1:0] ResultSrc_in,   
     input wire Branch_in,
     input wire Jump_in,
  
     input wire Zero_in,
  
-    input wire [2:0] funct3_in,      // NEW: needed by data_memory for LB/LH/LBU/LHU/SB/SH
+    input wire [2:0] funct3_in,      //needed by data_memory for LB/LH/LBU/LHU/SB/SH
  
     input wire [31:0] branch_target_in,
     input wire [31:0] alu_result_in,

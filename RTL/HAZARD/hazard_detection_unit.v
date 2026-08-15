@@ -1,4 +1,4 @@
-module hazard_detection_unit(
+module hazard_detection_unit(                    //this module is in the ID stage.even though its inputs are from the exe state it works in the decode stage. 
 
     input wire ID_EX_MemRead,
     input wire [4:0] ID_EX_rd,
