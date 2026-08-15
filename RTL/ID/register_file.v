@@ -43,8 +43,4 @@ module register_file (
         end
     end
 
-    always @(posedge clk) 
-    begin
-        $display("x1=%0d x2=%0d x3=%0d",registers[1],registers[2],registers[3]);
-    end
 endmodule
