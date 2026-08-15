@@ -108,7 +108,7 @@ module ex_mem_register_tb;
         write_data_in = 32'hAAAA_AAAA; pc_next_in = 32'hAAAA_AAAA;
         rd_in = 5'd31;
         @(posedge clk); #1;
-        reset = 0;
+        reset = 0;   
 
         // resume normal write after reset
         RegWrite_in = 1; MemRead_in = 0; MemWrite_in = 0;
