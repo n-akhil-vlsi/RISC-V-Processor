@@ -413,14 +413,9 @@ ex_mem_register ex_mem_register_inst(
     .MemRead_in(id_ex_MemRead),
     .MemWrite_in(id_ex_MemWrite),
     .ResultSrc_in(id_ex_ResultSrc),
-    .Branch_in(id_ex_Branch),
-    .Jump_in(id_ex_Jump),
 
-    .Zero_in(Zero),
+    .funct3_in(id_ex_funct3),
 
-    .funct3_in(id_ex_funct3),        
-
-    .branch_target_in(branch_target),
     .alu_result_in(alu_result),
     .write_data_in(forwardB_data),
     .pc_next_in(id_ex_pc_next),
@@ -431,14 +426,9 @@ ex_mem_register ex_mem_register_inst(
     .MemRead_out(ex_mem_MemRead),
     .MemWrite_out(ex_mem_MemWrite),
     .ResultSrc_out(ex_mem_ResultSrc),
-    .Branch_out(ex_mem_Branch),
-    .Jump_out(ex_mem_Jump),
 
-    .Zero_out(ex_mem_zero),
+    .funct3_out(ex_mem_funct3),
 
-    .funct3_out(ex_mem_funct3),        
-
-    .branch_target_out(ex_mem_branch_target),
     .alu_result_out(ex_mem_alu_result),
     .write_data_out(ex_mem_write_data),
     .pc_next_out(ex_mem_pc_next),

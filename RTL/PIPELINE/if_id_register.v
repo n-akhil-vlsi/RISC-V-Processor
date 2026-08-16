@@ -3,7 +3,7 @@ module if_id_register(
     input wire clk,
     input wire reset,
     input wire write_enable,
-    input wire flush,             // NEW
+    input wire flush,           
 
     input wire [31:0] pc_in,
     input wire [31:0] pc_next_in,

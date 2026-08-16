@@ -4,21 +4,20 @@ module mem_wb_register(
     input wire reset,
 
     input wire RegWrite_in,
-    input wire [1:0] ResultSrc_in,   // MODIFIED: was MemtoReg_in (1-bit)
+    input wire [1:0] ResultSrc_in,   
 
     input wire [31:0] read_data_in,
     input wire [31:0] alu_result_in,
-    input wire [31:0] pc_next_in,    // NEW: PC+4, for JAL/JALR link value
+    input wire [31:0] pc_next_in,    //for JAL/JALR link value
 
     input wire [4:0] rd_in,
 
     output reg RegWrite_out,
-    output reg [1:0] ResultSrc_out,  // MODIFIED
+    output reg [1:0] ResultSrc_out,  
 
     output reg [31:0] read_data_out,
     output reg [31:0] alu_result_out,
-    output reg [31:0] pc_next_out,   // NEW
-
+    output reg [31:0] pc_next_out,   
     output reg [4:0] rd_out
 
 );
