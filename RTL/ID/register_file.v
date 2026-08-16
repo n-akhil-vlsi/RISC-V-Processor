@@ -30,7 +30,8 @@ module register_file (
     
     assign read_data1 = (rs1 == 5'd0) ? 32'b0 :(we && (rd == rs1)) ? write_data : registers[rs1];
     assign read_data2 = (rs2 == 5'd0) ? 32'b0 :(we && (rd == rs2)) ? write_data : registers[rs2];
-
+    
+    //it is like If I'm writing to the same register that I'm reading, give me the new value instead of the old value.
 
     //We synchronize the write so that the state of the processor changes only at controlled clock edges to maintain the synchronization.
     
