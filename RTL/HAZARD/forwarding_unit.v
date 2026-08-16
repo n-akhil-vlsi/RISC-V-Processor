@@ -11,9 +11,10 @@ module forwarding_unit(
 
     output reg [1:0] ForwardA,
     output reg [1:0] ForwardB
-
-);
-
+                                                       //ADD x5, x1, x2
+                                                       //SUB x6, x5, x3
+);                                                     //regwrite is compulsary because,the instruction should keep the final value in the destination register. 
+                                                       //if it is store then we dont need the destination register value.so we dont need this condition.
 always @(*) begin
 
     // Default values
@@ -21,28 +22,20 @@ always @(*) begin
     ForwardB = 2'b00;
 
     // ForwardA Logic
-    if (EX_MEM_RegWrite &&
-        (EX_MEM_rd != 5'd0) &&
-        (EX_MEM_rd == ID_EX_rs1))
+    if (EX_MEM_RegWrite &&(EX_MEM_rd != 5'd0) &&(EX_MEM_rd == ID_EX_rs1))
 
         ForwardA = 2'b10;
 
-    else if (MEM_WB_RegWrite &&
-             (MEM_WB_rd != 5'd0) &&
-             (MEM_WB_rd == ID_EX_rs1))
+    else if (MEM_WB_RegWrite &&(MEM_WB_rd != 5'd0) &&(MEM_WB_rd == ID_EX_rs1))
 
         ForwardA = 2'b01;
 
     // ForwardB Logic
-    if (EX_MEM_RegWrite &&
-        (EX_MEM_rd != 5'd0) &&
-        (EX_MEM_rd == ID_EX_rs2))
+    if (EX_MEM_RegWrite &&(EX_MEM_rd != 5'd0) &&(EX_MEM_rd == ID_EX_rs2))
 
         ForwardB = 2'b10;
 
-    else if (MEM_WB_RegWrite &&
-             (MEM_WB_rd != 5'd0) &&
-             (MEM_WB_rd == ID_EX_rs2))
+    else if (MEM_WB_RegWrite &&(MEM_WB_rd != 5'd0) &&(MEM_WB_rd == ID_EX_rs2))
 
         ForwardB = 2'b01;
 
