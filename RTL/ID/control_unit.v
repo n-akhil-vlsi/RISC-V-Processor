@@ -5,9 +5,9 @@ module control_unit(
     output reg RegWrite,
     output reg MemRead,
     output reg MemWrite,
-    output reg ALUSrc,               //mux,before the input B of the ALU.
+    output reg ALUSrc,               //mux,before the input B of the ALU.00=rs2,01=immediate.
     output reg [1:0] ALUSrcA,        //mux,before the input A of the ALU. 00=rs1, 01=PC(AUIPC), 10=zero(LUI).
-    output reg [1:0] ResultSrc,      // modified MemtoReg (1-bit) mux. 00=ALU, 01=Mem(LW), 10=PC+4(JAL,JALR).
+    output reg [1:0] ResultSrc,      //00=ALU, 01=Mem(LW), 10=PC+4(JAL,JALR).
     output reg Branch,
     output reg Jump,
     output reg JALR,             
@@ -36,6 +36,8 @@ always @(*) begin
             RegWrite = 1;
             ALUSrc   = 0;
             ALUOp    = 2'b10;
+            ALUSrcA   = 2'b00;
+            ResultSrc = 2'b00; 
         end
 
         // I-Type Arithmetic (ADDI, ANDI...)
@@ -67,30 +69,29 @@ always @(*) begin
             ALUOp  = 2'b01;
         end
 
-        // JAL
+        // JAL----for this we dont use ALU so,no AluOp.
         7'b1101111: begin
             Jump      = 1;
             RegWrite  = 1;
             ResultSrc = 2'b10;   
         end
 
-        // JALR
+        // JALR-----no alu needed.
         7'b1100111: begin
             Jump      = 1;
             JALR      = 1;      
             RegWrite  = 1;
-            ALUSrc    = 1;
             ResultSrc = 2'b10;   
         end
 
-        // LUI
+        // LUI-------input A is 0 and input B is immediate(already the shifted version).
         7'b0110111: begin
             RegWrite = 1;
             ALUSrc   = 1;
             ALUSrcA  = 2'b10;
         end
 
-        // AUIPC
+        // AUIPC-----input A is PC and input B is immediate(shifted version).
         7'b0010111: begin
             RegWrite = 1;
             ALUSrc   = 1;
