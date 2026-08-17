@@ -1,4 +1,4 @@
-module forwarding_unit(
+module forwarding_unit(                               //we can imagine that the forwarding unit is present at the top or beside the datapath which takes signals from different pipeline stages and analyze them.
 
     input wire EX_MEM_RegWrite,
     input wire [4:0] EX_MEM_rd,
