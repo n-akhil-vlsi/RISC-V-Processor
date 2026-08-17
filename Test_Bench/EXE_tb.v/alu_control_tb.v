@@ -16,7 +16,7 @@ module alu_control_tb;
 
     initial begin
 
-        // Load/Store -> always ADD
+        // Load/Store ->ADD
         ALUOp = 2'b00; funct3 = 3'b000; funct7 = 7'b0000000; #10;
 
         // Branch: BEQ -> SUB

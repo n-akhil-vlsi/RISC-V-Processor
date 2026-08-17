@@ -36,8 +36,6 @@ module hazard_detection_unit_tb;
         ID_EX_MemRead = 1; ID_EX_rd = 5'd9; IF_ID_rs1 = 5'd9; IF_ID_rs2 = 5'd9; #10;
 
         // Edge case: rd = x0, even if "matching" -> real processors don't stall on x0,
-        // but this module has no x0 exception, so per RTL as written it WILL stall.
-        // Included to show actual behavior of current design, not an assumed fix.
         ID_EX_MemRead = 1; ID_EX_rd = 5'd0; IF_ID_rs1 = 5'd0; IF_ID_rs2 = 5'd3; #10;
 
         // Back to no-load -> stall clears

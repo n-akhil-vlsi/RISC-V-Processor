@@ -5,6 +5,7 @@ module data_memory_tb;
     reg [2:0] funct3;
     reg [31:0] address, write_data;
     wire [31:0] read_data;
+    
     data_memory uut (
         .clk(clk),
         .MemRead(MemRead),
@@ -14,7 +15,9 @@ module data_memory_tb;
         .write_data(write_data),
         .read_data(read_data)
     );
+    
     always #5 clk = ~clk;
+    
     initial begin
         clk = 0;
         MemRead = 0; MemWrite = 0;

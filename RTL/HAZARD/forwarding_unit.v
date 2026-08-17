@@ -10,9 +10,9 @@ module forwarding_unit(                               //we can imagine that the 
     input wire [4:0] ID_EX_rs2,
 
     output reg [1:0] ForwardA,
-    output reg [1:0] ForwardB
-                                                       //ADD x5, x1, x2
-                                                       //SUB x6, x5, x3
+    output reg [1:0] ForwardB                          //                            ADD  x5, x1, x2
+                                                       //ADD x5, x1, x2     or       AND  x7, x8, x9
+                                                       //SUB x6, x5, x3              SUB  x6, x5, x3
 );                                                     //regwrite is compulsary because,the instruction should keep the final value in the destination register. 
                                                        //if it is store then we dont need the destination register value.so we dont need this condition.
 always @(*) begin

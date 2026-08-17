@@ -16,7 +16,6 @@ module pc_tb;
         .pc(pc)
     );
 
-    // clock: 10ns period
     always #5 clk = ~clk;
 
     initial begin
@@ -31,7 +30,7 @@ module pc_tb;
         if (pc !== 32'h0) $display("FAIL: reset did not clear pc, pc=%h", pc);
         else $display("PASS: reset -> pc=%h", pc);
 
-        // release reset
+      
         reset = 0;
 
         // Test 2: PCWrite=0 -> pc must hold
@@ -67,11 +66,6 @@ module pc_tb;
 
         $display("Testbench complete.");
         $finish;
-    end
-
-    initial begin
-        $dumpfile("pc_tb.vcd");
-        $dumpvars(0, pc_tb);
     end
 
 endmodule

@@ -22,7 +22,7 @@ module control_unit_tb;
     );
 
     initial begin
-        opcode = 7'b0000000; #10;   // default/invalid
+        opcode = 7'b0000000; #10;   
 
         opcode = 7'b0110011; #10;   // R-Type
         opcode = 7'b0010011; #10;   // I-Type Arithmetic
