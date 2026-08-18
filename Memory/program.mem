@@ -1,0 +1,65 @@
+// 64 x 32-bit RV32I instruction memory 
+00500093  // 0:   addi x1,x0,5     | S1 Normal: x1=5
+00a00113  // 4:   addi x2,x0,10    | S1 Normal: x2=10
+00f00193  // 8:   addi x3,x0,15    | S1 Normal: x3=15
+01400213  // 12:  addi x4,x0,20    | S1 Normal: x4=20
+00100313  // 16:  addi x6,x0,1     | S1 Normal: x6=1
+00200393  // 20:  addi x7,x0,2     | S1 Normal: x7=2
+00300413  // 24:  addi x8,x0,3     | S1 Normal: x8=3
+00102023  // 28:  sw   x1,0(x0)    | S2 Store x1(5) to mem[0]
+00002483  // 32:  lw   x9,0(x0)    | S2 Load into x9
+00248533  // 36:  add  x10,x9,x2   | S2 LOAD-USE HAZARD: x9 used immediately -> stall
+00700593  // 40:  addi x11,x0,7    | S2 filler
+00800613  // 44:  addi x12,x0,8    | S2 filler
+00900693  // 48:  addi x13,x0,9    | S2 filler
+00a00713  // 52:  addi x14,x0,10   | S2 filler
+002087b3  // 56:  add  x15,x1,x2   | S3 x15=15
+40378833  // 60:  sub  x16,x15,x3  | S3 EX/MEM FORWARD: x15 from prev instr
+010788b3  // 64:  add  x17,x15,x16 | S3 MEM/WB fwd x15(2back)+EX/MEM fwd x16(1back)
+00b00913  // 68:  addi x18,x0,11   | S3 filler
+00c00993  // 72:  addi x19,x0,12   | S3 filler
+00d00a13  // 76:  addi x20,x0,13   | S3 filler
+00e00a93  // 80:  addi x21,x0,14   | S3 filler
+00202223  // 84:  sw   x2,4(x0)    | S4 store x2(10) to mem[1]
+00402b03  // 88:  lw   x22,4(x0)   | S4 load into x22
+003b0bb3  // 92:  add  x23,x22,x3  | S4 LOAD-USE HAZARD -> stall
+416b8c33  // 96:  sub  x24,x23,x22 | S4 EX/MEM fwd x23 + MEM/WB fwd x22
+00f00c93  // 100: addi x25,x0,15   | S4 filler
+01000d13  // 104: addi x26,x0,16   | S4 filler
+01100d93  // 108: addi x27,x0,17   | S4 filler
+00208e33  // 112: add  x28,x1,x2   | S5 x28=15 (computed right before branch)
+003e0463  // 116: beq  x28,x3,+8   | S5 BRANCH FORWARDING: needs x28 fwd to compare; x28==x3(15) -> taken
+06300e93  // 120: addi x29,x0,99   | S5 SHOULD BE FLUSHED (branch taken skips this)
+00800f6f  // 124: jal  x30,+8      | S5 branch target; jump ahead, link x30
+05800f93  // 128: addi x31,x0,88   | S5 SHOULD BE FLUSHED (jal skips this)
+03700093  // 132: addi x1,x0,55    | S5 jal target lands here, x1=55
+04200113  // 136: addi x2,x0,66    | S5 filler
+01e00293  // 140: addi x5,x0,30    | S6 x5=30 (reused reg)
+00629663  // 144: bne  x5,x6,+12   | S6 x5(30)!=x6(1) -> branch TAKEN -> flush next 2 instrs
+06f00313  // 148: addi x6,x0,111   | S6 SHOULD BE FLUSHED
+006303b3  // 152: add  x7,x6,x6    | S6 SHOULD BE FLUSHED (also has hazard on x6 if not flushed)
+0de00413  // 156: addi x8,x0,222   | S6 branch target lands here, x8=222
+008404b3  // 160: add  x9,x8,x8    | S6 EX/MEM FORWARD: x8 used immediately after target
+00500513  // 164: addi x10,x0,5    | S6 filler
+00208033  // 168: add  x0,x1,x2    | S7 attempted write to x0 -> must stay 0
+003005b3  // 172: add  x11,x0,x3   | S7 use x0 immediately -> must read 0, not forwarded
+03200013  // 176: addi x0,x0,50    | S7 attempted write to x0 -> must stay 0
+40400633  // 180: sub  x12,x0,x4   | S7 use x0 immediately -> must read 0
+00000693  // 184: addi x13,x0,0    | S7 baseline x0 source use
+00000733  // 188: add  x14,x0,x0   | S7 x14=0
+04d00793  // 192: addi x15,x0,77   | S7 filler
+00500813  // 196: addi x16,x0,5    | S8 instrA: x16=5
+00a00813  // 200: addi x16,x0,10   | S8 instrB: x16=10 (WAW overwrite)
+000808b3  // 204: add  x17,x16,x0  | S8 PRIORITY: must fwd EX/MEM(10) not MEM/WB(5)
+00100913  // 208: addi x18,x0,1    | S8 instrA2: x18=1
+00200913  // 212: addi x18,x0,2    | S8 instrB2: x18=2 (WAW overwrite)
+012909b3  // 216: add  x19,x18,x18 | S8 PRIORITY on both operands: must use 2, not 1
+02100a13  // 220: addi x20,x0,33   | S8 filler
+00100a93  // 224: addi x21,x0,1    | S9 pre-reset sequential instr
+00200b13  // 228: addi x22,x0,2    | S9 pre-reset sequential instr
+00300b93  // 232: addi x23,x0,3    | S9 pre-reset sequential instr
+00400c13  // 236: addi x24,x0,4    | S9 RESET asserted mid-pipeline around here
+00500c93  // 240: addi x25,x0,5    | S9 post-reset: pipeline should be cleared
+00600d13  // 244: addi x26,x0,6    | S9 post-reset sequential instr
+00700d93  // 248: addi x27,x0,7    | S9 post-reset sequential instr
+00800e13  // 252: addi x28,x0,8    | S9 post-reset sequential instr

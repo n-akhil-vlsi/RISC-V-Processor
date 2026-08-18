@@ -9,7 +9,7 @@ module instruction_memory (
     reg [31:0] memory [0:63];
 
     initial begin
-        $readmemh("Memory/program.mem", memory);        //It loads the hexadecimal instructions from Memory/program.mem into the memory array when simulation starts.
+       $readmemh("E:/RISC-V-Processor-VIVADO/Memory/program.mem", memory);        //It loads the hexadecimal instructions from Memory/program.mem into the memory array when simulation starts.
     end
 
     assign instruction = memory[address[31:2]];     //each instruction is 4 bytes, the instructions are stored at addresses 0, 4, 8, 12, 16, .... Therefore, the lowest 2 address bits are always 00.
