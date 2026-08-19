@@ -13,7 +13,6 @@ module riscv_processor_tb_case1_normal;
         .reset (reset)
     );
  
-    // clock: 10ns period
     initial clk = 1'b0;
     always #5 clk = ~clk;
  
@@ -22,7 +21,6 @@ module riscv_processor_tb_case1_normal;
         repeat (2) @(posedge clk);
         reset = 1'b0;
  
-        // run enough cycles for the last addi (PC=24, x8=3) to reach WB
         repeat (11) @(posedge clk);
  
         $finish;
