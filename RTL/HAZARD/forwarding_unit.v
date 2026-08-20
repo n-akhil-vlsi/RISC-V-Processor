@@ -20,6 +20,8 @@ always @(*) begin
     // Default values
     ForwardA = 2'b00;
     ForwardB = 2'b00;
+    
+     //Here EX_MEM_RD and MEM_WB_RD should not be x0,becz we cant write value into the x0 reg it is always 0.If the rd is x0 then we dont forward the value becz x0 dont update any value.
 
     // ForwardA Logic
     if (EX_MEM_RegWrite &&(EX_MEM_rd != 5'd0) &&(EX_MEM_rd == ID_EX_rs1))

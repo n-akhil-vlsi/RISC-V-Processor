@@ -19,7 +19,6 @@ module riscv_processor_tb_case7_x0;
         .reset (reset)
     );
  
-    // clock: 10ns period
     initial clk = 1'b0;
     always #5 clk = ~clk;
  
@@ -27,10 +26,7 @@ module riscv_processor_tb_case7_x0;
         reset = 1'b1;
         repeat (2) @(posedge clk);
         reset = 1'b0;
- 
-        // run enough cycles for PC to reach 192 (48 fetches from 0),
-        // plus WB latency, plus margin so x0/x11/x12/x13/x14/x15
-        // fully settle in the register file
+
         repeat (56) @(posedge clk);
  
         $finish;
