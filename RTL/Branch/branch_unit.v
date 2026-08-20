@@ -1,5 +1,5 @@
 module branch_unit(               //this module is used for the branch or jump instruction(PC).
-
+                                  //this branch unit is present in the execute stage.
     input wire Branch,
     input wire Jump,
     input wire JALR,

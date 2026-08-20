@@ -2,7 +2,7 @@ module id_ex_register(
 
     input wire clk,
     input wire reset,
-    input wire flush,               
+    input wire flush,     //if flush takes place then think it as the instruction with no life passing through each registers and modules.             
 
     input wire RegWrite_in,
     input wire MemRead_in,
@@ -87,8 +87,8 @@ always @(posedge clk or posedge reset) begin
     end
 
     else if(flush) begin                 //bubble — zero control signals only
-
-        RegWrite_out <= 0;
+                                         //making the control signals 0 means removing the instruction from the datapath just adding the bubble(NOP).
+        RegWrite_out <= 0;               //no need of making every signal 0 if we make control signals 0 then the instruction will not work.
         MemRead_out <= 0;
         MemWrite_out <= 0;
         ResultSrc_out <= 2'b00;

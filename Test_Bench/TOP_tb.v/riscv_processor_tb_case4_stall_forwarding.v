@@ -5,9 +5,13 @@ module riscv_processor_tb_case4_stall_forwarding;
     // CASE 4: Stall + Forwarding | Start PC: 84 | Main instructions: 84-96
     // 84: sw  x2,4(x0)      -> store x2(10) to mem[1]
     // 88: lw  x22,4(x0)     -> load into x22
-    // 92: add x23,x22,x3    -> LOAD-USE HAZARD: x22 used immediately -> stall
-    // 96: sub x24,x23,x22   -> EX/MEM fwd x23 + MEM/WB fwd x22
- 
+    // 92: add x23,x22,x3    -> Hazard detection happens and it stalls the IF/ID ,the stalls happens becz of lw and add and then forwarding of the data happens. 
+    // 96: sub x24,x23,x22   -> forwarding of data happens,due to the add and sub instructions.
+    //100 to 108 fillers.
+
+
+    //here the stall and forwarding happens between the lw and add 
+    //forwarding also happens between add and sub
     reg clk;
     reg reset;
  
@@ -15,8 +19,7 @@ module riscv_processor_tb_case4_stall_forwarding;
         .clk   (clk),
         .reset (reset)
     );
- 
-    // clock: 10ns period
+
     initial clk = 1'b0;
     always #5 clk = ~clk;
  
@@ -25,9 +28,6 @@ module riscv_processor_tb_case4_stall_forwarding;
         repeat (2) @(posedge clk);
         reset = 1'b0;
  
-        // run enough cycles for PC to reach 96 (25 fetches from 0),
-        // plus WB latency, plus 1 extra cycle for the load-use stall,
-        // plus margin so x23/x24 fully settle in the register file
         repeat (31) @(posedge clk);
  
         $finish;
