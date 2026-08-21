@@ -282,4 +282,4 @@ The nine integration testbenches correspond to the nine verification scenarios d
 
 ## 15. Author
 
-N. Akhil — Electrical Engineering, IIT Hyderabad (VLSI & Microelectronics)
+N. Akhil — Electronics and Communication Engineering,NIT SURAT.
