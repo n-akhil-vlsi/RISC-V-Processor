@@ -28,7 +28,7 @@ Hazard detection, forwarding, and pipeline flushing are integrated around the pi
 | **MEM** – Memory Access | Load/store to `data_memory` |
 | **WB** – Write Back | Result written back into the register file |
 
-A normal instruction takes **5 clock cycles** from fetch to its value landing in the destination register.
+A normal instruction progresses through the five pipeline stages (IF → ID → EX → MEM → WB), with its destination register updated during the WB clock edge.
 
 ### Modules Present in Each Stage
 
